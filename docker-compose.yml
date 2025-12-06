@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  db:
+      image: postgres:15-alpine
+      container_name: salon_postgres
+      restart: always
+      environment:
+        POSTGRES_USER: salon
+        POSTGRES_PASSWORD: salon123#
+        POSTGRES_DB: salon_db
+      ports:
+        - "5432:5432"
+      volumes:
+        # 1. mount local sql files to the initialization directory
+        - ./app/source/all:/docker-entrypoint-initdb.d
+        # 2. persist the actual database data (optional)
+        - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
