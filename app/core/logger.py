@@ -1,5 +1,6 @@
 import json
 import logging
+from pathlib import Path
 
 from loguru import logger
 
@@ -20,7 +21,7 @@ class InterceptHandler(logging.Handler):
             level = record.levelno
 
         frame, depth = logging.currentframe(), 2
-        while frame.f_code.co_filename == logging.__file__:
+        while frame and frame.f_code.co_filename == logging.__file__:
             frame = frame.f_back
             depth += 1
 
@@ -29,7 +30,7 @@ class InterceptHandler(logging.Handler):
         )
 
 
-def patch_record_with_json(record: dict) -> None:
+def patch_record_with_json(record) -> None:
     """
     Patcher that replaces the log message with a structured JSON payload.
     """
@@ -60,6 +61,8 @@ def patch_record_with_json(record: dict) -> None:
 
 
 def setup_logging():
+    Path(settings.LOG_FILE_PATH).parent.mkdir(parents=True, exist_ok=True)
+
     # Remove any default handlers
     logger.remove()
     # Patch the logger to use our JSON structuring function
@@ -81,10 +84,6 @@ def setup_logging():
     uvicorn_error.disabled = True
     uvicorn_access = logging.getLogger("uvicorn.access")
     uvicorn_access.disabled = True
-
-    # authlib log
-    authlib_logger = logging.getLogger("authlib")
-    authlib_logger.setLevel(logging.INFO)
 
     # urllib3
     urllib3_logger = logging.getLogger("urllib3")

@@ -9,7 +9,6 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.types import Message
 
 from app.core.context import RequestContext, var_request_context
-from app.core.security import try_get_token
 
 
 def _get_sanitized_headers(request: Request):
@@ -76,18 +75,13 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         start_time = time.monotonic()
         request_id = str(uuid.uuid4())
 
-        user_id = "N/A"
-        token = await try_get_token(request)
-        if token:
-            user_id = token.email
-
         # Set context variables for this request
         var_request_context.set(
             RequestContext(
                 request_id=request_id,
                 endpoint=request.url.path,
                 http_method=request.method,
-                user_id=user_id,
+                user_id="N/A",
             )
         )
 

@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.exceptions import register_exception_handlers
 from app.api.responses import ResponseClass, response_helper
@@ -21,7 +20,6 @@ register_exception_handlers(app)
 
 # middlewares
 app.add_middleware(LoggingMiddleware)
-app.add_middleware(SessionMiddleware, settings.APP_SESSION_SECRET_KEY)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ALLOWED_ORIGINS,
